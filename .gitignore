@@ -1,6 +1,4 @@
 
 *.o
 HW_1_FLEX/json
-HW_1_FLEX/json
-*.o
 HW_1_FLEX/lex.yy.c
