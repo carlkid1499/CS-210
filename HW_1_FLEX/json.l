@@ -21,10 +21,13 @@ HEX   0[xX]digit+
 [*{*] {return LCURLY;}
 [*}*] {return RCURLY;}
 [*,*] {return COMMA;}
-[*;*] {return COLON;}
+[*:*] {return COLON;}
 [*[*] {return LBRACKET;}
 [*]*] {return RBRACKET;}
-[*"{[LET}+"*] {return STRINGLIT;}
+\"(\\.|[^"\\])*\" {return STRINGLIT;} /* This matches strings! http://stackoverflow.com/questions/2039795/ddg#2039820
+What I don't is why \"(\\.|[^"\\])*\" works but not [\"(\\.|[^"\\])*\"] ... look this up later.
+*/
+[ \t\n\r] /* skip whitespace */
 .		{ printf("lexical error: line %d\n",yylineno); }
 
 %%
