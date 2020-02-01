@@ -11,17 +11,20 @@
 %option yylineno
 %option noyywrap
 
-digit [0-9]
-alpha [a-fA-F]
-hex   0[xX]digit+
+DIG [0-9]
+LET [a-fA-F]
+HEX   0[xX]digit+
 
 %%
+"TRUE" {return TRUE;}
+"FALSE" {return FALSE;}
 [*{*] {return LCURLY;}
 [*}*] {return RCURLY;}
 [*,*] {return COMMA;}
 [*;*] {return COLON;}
 [*[*] {return LBRACKET;}
 [*]*] {return RBRACKET;}
-.		{ printf("lexical error on line %d\n",yylineno); }
+[*"{[LET}+"*] {return STRINGLIT;}
+.		{ printf("lexical error: line %d\n",yylineno); }
 
 %%

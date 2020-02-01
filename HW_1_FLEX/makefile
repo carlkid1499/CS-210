@@ -13,3 +13,6 @@ lex.yy.o: lex.yy.c json.h
 
 lex.yy.c: json.l
 	flex json.l
+
+run:
+	./json test.json
