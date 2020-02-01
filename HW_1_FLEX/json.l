@@ -13,11 +13,12 @@
 
 DIG [0-9]
 LET [a-fA-F]
-HEX   0[xX]digit+
+HEX   0[xX]DIG+
 
 %%
-"TRUE" {return TRUE;}
-"FALSE" {return FALSE;}
+"true" | "TRUE" {return TRUE;}
+"false" | "FALSE" {return FALSE;}
+"null" | "NULL" {return null;}
 [*{*] {return LCURLY;}
 [*}*] {return RCURLY;}
 [*,*] {return COMMA;}
@@ -27,6 +28,7 @@ HEX   0[xX]digit+
 \"(\\.|[^"\\])*\" {return STRINGLIT;} /* This matches strings! http://stackoverflow.com/questions/2039795/ddg#2039820
 What I don't is why \"(\\.|[^"\\])*\" works but not [\"(\\.|[^"\\])*\"] ... look this up later.
 */
+{DIG}+ {return NUMBER;} /* matches number like 00000+ */
 [ \t\n\r] /* skip whitespace */
 .		{ printf("lexical error: line %d\n",yylineno); }
 

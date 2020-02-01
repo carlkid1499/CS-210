@@ -16,3 +16,7 @@ lex.yy.c: json.l
 
 run:
 	./json test.json
+
+#grep for errors no need to scroll through junk
+grep:
+	./json test.json | grep error
