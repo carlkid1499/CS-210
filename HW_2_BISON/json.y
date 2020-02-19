@@ -9,6 +9,7 @@
 // Declare stuff from Flex that Bison needs to know about:
     #include "json.h"
 %}
+
 /* Bison Declaratons */
 %token TRUE
 %token FALSE
@@ -23,15 +24,45 @@
 %token NUMBER
 
 %% /*  The Grammer follows. */
-object: LCURLY " " RCURLY | LCURLY " " STRINGLIT " " COLON value RCURLY |  ;
 
-// find out how to do 1 more of value COMMA value
-array: LBRACKET " " RBRACKET | LBRACKET "\t" RBRACKET | 
-LBRACKET value RBRACKET | value COMMA value; 
+//  whitespace is ignored in flex file
+object
+    : LCURLY RCURLY
+    | LCURLY object_center RCURLY
+;
 
-value: " " STRINGLIT " " | "\n" STRINGLIT "\n" | "\t" STRINGLIT "\t" |
-" " TRUE " " | "\n" TRUE "\n" | "\t" TRUE "\t" |
-" " FALSE " " | "\n" FALSE "\n" | "\t" FALSE "\t" |
-" " null " " | "\n" null "\n" | "\t" null "\t" |
-" " NUMBER " " | "\n" NUMBER "\n" | "\t" NUMBER "\t" ;
+object_center
+    : STRINGLIT COLON value
+    | STRINGLIT COLON value COMMA object_center
+;
+
+array
+    : LBRACKET array_center RBRACKET
+;
+
+array_center
+    : value
+    | COMMA array_center
+;
+
+number
+    : NUMBER
+    | '-' NUMBER // negative number
+    | NUMBER '.' NUMBER // fraction number
+    | 'E' '-' NUMBER // exponential
+    | 'e' '-' NUMBER // exponential
+    | 'E' '+' NUMBER // exponential
+    | 'e' '+' NUMBER // exponential
+;
+
+value
+    : STRINGLIT 
+    |  number 
+    |  object 
+    |  array 
+    |  TRUE 
+    |  FALSE 
+    |  null 
+;
+
 

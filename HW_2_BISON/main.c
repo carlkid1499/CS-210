@@ -5,15 +5,19 @@
 ** 2/5/2020
 */
 
-#include "json.tab.h"
+#include "json.h"
 #include <stdio.h>
 #include <stdlib.h>
 extern FILE *yyin;
 extern char *yytext;
-extern int *yylineno;
+extern int yylineno;
+extern int yydebug;
 char *yyfilename;
+void yyerror(char *s);
+
 int main(int argc, char *argv[])
 {
+   yydebug = 1 ;
    int i;
    if (argc < 2) { printf("usage: iscan file.dat\n"); exit(-1); }
    yyin = fopen(argv[1],"r");
@@ -28,6 +32,5 @@ int main(int argc, char *argv[])
 /* error function for Bison */
 void yyerror(char *s)
 {
-   fprintf(stderr, "%s:%d: %s before '%s' token\n",
-	   yyfilename, yylineno, s, yytext);
+   fprintf(stderr, "%s:%d: %s before '%s' token\n", yyfilename, yylineno, s, yytext);
 }

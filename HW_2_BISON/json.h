@@ -6,10 +6,9 @@
 */
 
 #include "json.tab.h"
-
 /* header file for JSON tokens, codes from json.org */
 
-#define TRUE      1
+/*#define TRUE      1
 #define FALSE     2
 #define null      3
 #define LCURLY   '{'
@@ -18,6 +17,6 @@
 #define COLON    ':'
 #define LBRACKET '['
 #define RBRACKET ']'
-#define STRINGLIT 4
+#define STRINGLIT 4 */
 /* #define CHARLIT 5 json does not have character literals! */
-#define NUMBER    6
+/* #define NUMBER    6 */
