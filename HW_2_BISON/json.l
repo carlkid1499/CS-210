@@ -6,7 +6,7 @@
 */
 
 %{
-#include "json.h"
+#include "json.tab.h"
 %}
 
 %option yylineno
