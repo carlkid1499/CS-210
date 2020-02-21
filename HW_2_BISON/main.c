@@ -1,8 +1,9 @@
 /* Carlos Santos
 ** main.c
 ** CS 210
-** Provided by Dr J.
-** 2/5/2020
+** Homework 2
+** This main file for the HW 2 project. Some of the code was provided by Dr. Jefferey. (DR. J)
+** Addtions: error funtions and yydebug stuff.
 */
 
 #include <stdio.h>
@@ -20,18 +21,30 @@ void yyerror(char *s);
 
 int main(int argc, char *argv[])
 {
-  // yydebug = 1 ;
+   // yydebug = 1 ;
    int i;
-   if (argc < 2) { printf("usage: iscan file.dat\n"); exit(-1); }
-   yyin = fopen(argv[1],"r");
-   if (yyin == NULL) { printf("can't open/read '%s'\n", argv[1]); exit(-1); }
+   if (argc < 2)
+   {
+      printf("usage: iscan file.dat\n");
+      exit(-1);
+   }
+   yyin = fopen(argv[1], "r");
+   if (yyin == NULL)
+   {
+      printf("can't open/read '%s'\n", argv[1]);
+      exit(-1);
+   }
    yyfilename = argv[1];
-   if ((i=yyparse()) != 0) {
+   if ((i = yyparse()) != 0)
+   {
       printf("parse failed\n");
-      }
-   else printf("no errors\n");
+   }
+   else
+   {
+      printf("\n\nno errors priting sytaxt tree: \n\n");
+      treeprint(yyroot); // print the syntax tree
+   }
 
-   treeprint(yyroot);
    return 0;
 }
 /* error function for Bison */

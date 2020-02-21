@@ -1,9 +1,12 @@
-/*
- * These integer codes correspond to production rules in c-calctree.y
- * The numbers are almost arbitrary, except (a) we'd like to not overlap
- * with any terminal symbol codes, including ASCII codes, and (b) ideally
- * it would be trivial to tell from the code what non-terminal is involved.
- */
+/* Carlos Santos
+** prodrules.h
+** CS 210
+** Homework 2
+**  This is the production rules file. It has
+** value delcrations for all the rules inside the
+** bison file. (json.y)
+** numbers will not mess with bison delclarations
+*/
 
 #define START 1000
 

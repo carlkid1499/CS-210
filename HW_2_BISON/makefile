@@ -1,7 +1,9 @@
-# flex makefile.
 # Carlos Santos
-# HW 2
-# CS 210 2/21/2020
+# makefile
+# CS 210
+# Homework 2
+# make file for the hw 2 project.
+
 
 	
 jsonpp: main.o lex.yy.o json.tab.o tree.o
