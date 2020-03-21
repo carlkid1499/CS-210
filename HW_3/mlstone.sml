@@ -6,6 +6,10 @@
 *)
 
 val menu_items = ("Please Select one of the options below:\n","Option 1: Start Game!\n", "Option 2: Exit Game!\n"); (* This is the menu item tuple  *)
+(* Load in another .sml file into the main sml file
+  Reference: https://www.classes.cs.uchicago.edu/archive/2006/fall/15300-1/handouts/sml-load.pdf
+*)
+use "game.sml"; 
 
 (* ----- func defs: Begin ----- *)
 fun welcome_screen () =
@@ -28,11 +32,16 @@ fun get_input () =
 
 fun game_loop x =
   if x = "1" then print("Game is starting!......")
-  else if x = "2" then print("game is exiting")
+  else if x = "2" then ( print("Game is exiting.....");
+                        (* How to terminate current sml program
+                          Reference: https://smlnj.org/doc/FAQ/usage.html
+                        *)
+                        OS.Process.exit(OS.Process.success)  
+                        )
   else (print("Not valid option. Try again\n\n");
         print_menu_items();
         (* How to use let in end
-          reference: https://www.cs.cornell.edu/courses/cs312/2004fa/lectures/rec21.html 
+          Reference: https://www.cs.cornell.edu/courses/cs312/2004fa/lectures/rec21.html 
         *)
         let
           val menu_option = get_input()
@@ -40,7 +49,7 @@ fun game_loop x =
         in
           (* To run functions inside let use a set of ( ) around the function
             If you are going to use more than one seperate then by ,
-            reference: https://stackoverflow.com/questions/43081978/how-to-call-two-functions-in-a-let-in-in-sml-nj
+            Reference: https://stackoverflow.com/questions/43081978/how-to-call-two-functions-in-a-let-in-in-sml-nj
           *)
           (game_loop(menu_option))
         end

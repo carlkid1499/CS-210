@@ -6,9 +6,22 @@
 *)
 
 
+(* Following specs for HW3: http://www2.cs.uidaho.edu/~jeffery/courses/210/hw3.html *)
+
 val Health=50;
 val AIHealth=50;
-val Hand=[	     (1, false, "C slug", 0, 1),
+val Energy=10;
+val AIEnergy=10;
+
+val Minions = [
+	(10,false, "Demo1",10,100)
+];
+
+val  Monsters = [
+	(10,true, "Demo2",10,100)
+];
+
+val Hand=[	     (1, false, "C slug", 0, 1), (*energy cost, spell power, name, attack, health*)
 	     (1, false, "int", 1, 1),
 	     (1, true, "++", 0, 1),
 	     (1, true, "^=", 4, 0),
