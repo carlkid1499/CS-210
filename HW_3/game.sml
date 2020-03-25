@@ -13,15 +13,7 @@ val AIHealth=50;
 val Energy=10;
 val AIEnergy=10;
 
-val Minions = [
-	(10,false, "Demo1",10,100)
-];
-
-val  Monsters = [
-	(10,true, "Demo2",10,100)
-];
-
-val Hand=[	     (1, false, "C slug", 0, 1), (*energy cost, spell power, name, attack, health*)
+val Hand=[(1, false, "C slug", 0, 1), (*energy cost, spell power, name, attack, health*)
 	     (1, false, "int", 1, 1),
 	     (1, true, "++", 0, 1),
 	     (1, true, "^=", 4, 0),
@@ -31,7 +23,7 @@ val Hand=[	     (1, false, "C slug", 0, 1), (*energy cost, spell power, name, at
 	     (4, true, "Bus Error Fireball", 6, 0)
             ];
 
-val AIHand=[     (1, true, "Atom", 0, 1),
+val AIHand=[(1, true, "Atom", 0, 1),
 	     (1, true, "Car", 1, 0),
 	     (1, true, "Cdr", 2, 0),
 	     (1, false, "Parenthesis", 1, 1),
