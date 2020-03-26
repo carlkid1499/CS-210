@@ -4,6 +4,7 @@
 ** 03/22/2020
 ** Uniersity of Idaho
 *)
+;#set CM.Control.verbose false;
 
 val menu_items = ("Please Select one of the options below:\n","Option 1: Start\n", "Option 2: Quit\n"); (* This is the menu item tuple  *)
 (* Load in another .sml file into the main sml file
@@ -17,7 +18,7 @@ val game_loop_items = ("Start","Quit: Quits game.\n","End: Ends Turn\n","Play: P
 (* ----- func defs: Begin ----- *)
 fun welcome_screen () =
   (
-    print("Hello welcome to MLStone!\n");
+    print("\n\nHello welcome to MLStone!\n");
     print("A knock off knock off of HeartStone LOL!\n");
     print("You will be asked for your name shortly. You'll be playing against a CPU\n\n")
   );
@@ -90,12 +91,48 @@ fun user_attack (L1:(int*bool*string*int*int) list,L2:(int*bool*string*int*int) 
           val cardy_spell =  #2 cardy;
           val cardy_attack = #4 cardy;
           val cardy_health = #5 cardy;
+          val newcardy_health = cardy_health - cardx_attack;
         in
           (if cardx_spell = false then (
-            if cardy_spell = false then print("\n\nAttack is valid. Starting attack.\n\n")
+            if cardy_spell = false then (
+              print("\n\nAttack is valid. Starting attack.\n\n")
+              
+            )
             else print("\n\nCan't attack a spell card!\n\n")
             )
             else print("\n\nCan't attack a spell card!\n\n"))
+        end
+      )
+      else print("\n\nNot a valid card!\n\n")
+    )
+    else print("\n\nNot a valid card!\n\n")
+  );  
+
+fun user_play (L1:(int*bool*string*int*int) list,L2:(int*bool*string*int*int) list,x:int,y:int) =
+  (
+    if x >= 0  then (
+      if x <= (length(L1) - 1) then (
+        let
+          val cardx = List.nth(L1,x)
+          val cardy = List.nth(L2,y)
+          val cardx_cost = #1 cardx;
+          val cardx_spell =  #2 cardx;
+          val cardx_attack = #4 cardx;
+          val cardx_health = #5 cardx;
+          val cardy_cost = #1 cardy;
+          val cardy_spell =  #2 cardy;
+          val cardy_attack = #4 cardy;
+          val cardy_health = #5 cardy;
+          val newcardy_health = cardy_health - cardx_attack;
+        in
+          (if cardx_spell = true then (
+            if cardy_spell = false then (
+              print("\n\nSpell Attack is valid. Starting attack.\n\n")
+              
+            )
+            else print("\n\nNot a Spell card!\n\n")
+            )
+            else print("\n\nNot a Spell card!\n\n"))
         end
       )
       else print("\n\nNot a valid card!\n\n")
@@ -121,13 +158,23 @@ fun game_loop x =
 
   else if x = "Play" then (
     print("Enter only the card number!\n");
-    print("Play which card #?:\n");
+    print("Play which spell card #?:\n");
 
     let
-      val strinput = get_input()   
-      val strinput = String.substring(strinput, 0, size strinput - 1)
+      val strinput1 = get_input()   
+      val strinput1 = String.substring(strinput1, 0, size strinput1 - 1)
     in
-      print("Getting card: " ^ strinput ^ ".......\n")
+      print("Selecting card: " ^ strinput1 ^ ".......\n");
+      print("Play spell on card#?:\n");
+      let
+        val strinput2 = get_input()   
+        val strinput2 = String.substring(strinput2, 0, size strinput2 - 1)
+      in
+        print("\nCasting spell card: " ^ strinput2 ^ ".......\n");
+        (* The line below means: pass in a List, int, int. We have to convert and grab the int option value*)
+        user_play(Hand,AIHand,valOf(Int.fromString(strinput1)),valOf(Int.fromString(strinput2))); 
+        game_loop("Start")
+      end
     end
   )  
 
@@ -145,7 +192,7 @@ fun game_loop x =
         val strinput2 = get_input()   
         val strinput2 = String.substring(strinput2, 0, size strinput2 - 1)
       in
-        print("Attacking card: " ^ strinput2 ^ ".......\n");
+        print("\nAttacking card: " ^ strinput2 ^ ".......\n");
         (* The line below means: pass in a List, int, int. We have to convert and grab the int option value*)
         user_attack(Hand,AIHand,valOf(Int.fromString(strinput1)),valOf(Int.fromString(strinput2))); 
         game_loop("Start")
@@ -198,9 +245,10 @@ fun Intro_loop x =
 (* ----- func defs: End ----- *)
 
 welcome_screen();
+print("What is your name:\n");
 val myLine = get_input();
 val myLineMod = String.substring(myLine, 0, size myLine - 1); (* Remove the "\n" from the input*)
-print ("Welcome player: " ^ myLineMod ^ " !");
+print ("\n\nWelcome player: " ^ myLineMod ^ " !\n\n");
 print_menu_items();
 
 val menu_option = get_input();
