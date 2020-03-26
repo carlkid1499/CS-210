@@ -11,7 +11,7 @@ val menu_items = ("Please Select one of the options below:\n","Option 1: Start\n
 *)
 use "game.sml"; 
 
-val game_loop_items = ("Start","Quit: Quits game.\n","End: Ends Turn\n","Play: Play \"name\" [on \"name\"]\n","Attack: Attack \"name\" with \"name\"\n");
+val game_loop_items = ("Start","Quit: Quits game.\n","End: Ends Turn\n","Play: Play a spell on monstor or AI\n","Attack: Attack a monstor, or AI\n");
 
 
 (* ----- func defs: Begin ----- *)
@@ -75,6 +75,34 @@ fun print_all_hand (L:(int*bool*string*int*int) list,i) = (* Note: When stuff is
       end
     );
 
+fun user_attack (L1:(int*bool*string*int*int) list,L2:(int*bool*string*int*int) list,x:int,y:int) =
+  (
+    if x >= 0  then (
+      if x <= (length(L1) - 1) then (
+        let
+          val cardx = List.nth(L1,x)
+          val cardy = List.nth(L2,y)
+          val cardx_cost = #1 cardx;
+          val cardx_spell =  #2 cardx;
+          val cardx_attack = #4 cardx;
+          val cardx_health = #5 cardx;
+          val cardy_cost = #1 cardy;
+          val cardy_spell =  #2 cardy;
+          val cardy_attack = #4 cardy;
+          val cardy_health = #5 cardy;
+        in
+          (if cardx_spell = false then (
+            if cardy_spell = false then print("\n\nAttack is valid. Starting attack.\n\n")
+            else print("\n\nCan't attack a spell card!\n\n")
+            )
+            else print("\n\nCan't attack a spell card!\n\n"))
+        end
+      )
+      else print("\n\nNot a valid card!\n\n")
+    )
+    else print("\n\nNot a valid card!\n\n")
+  );  
+
 fun game_loop x =
   if x = "Start" then (
     print_game_loop_items();
@@ -91,23 +119,46 @@ fun game_loop x =
   
   else if x = "End" then print("End")
 
-  else if x = "Play" then print("Play")
+  else if x = "Play" then (
+    print("Enter only the card number!\n");
+    print("Play which card #?:\n");
 
-  else if x = "Attack" then print("Attack")
+    let
+      val strinput = get_input()   
+      val strinput = String.substring(strinput, 0, size strinput - 1)
+    in
+      print("Getting card: " ^ strinput ^ ".......\n")
+    end
+  )  
+
+  else if x = "Attack" then (
+    print("Enter only the card number!\n");
+    print("Attack with which card #?:\n");
+
+    let
+      val strinput1 = get_input()   
+      val strinput1 = String.substring(strinput1, 0, size strinput1 - 1)
+    in
+      print("Selecting card: " ^ strinput1 ^ ".......\n");
+      print("Attack card#?:\n");
+      let
+        val strinput2 = get_input()   
+        val strinput2 = String.substring(strinput2, 0, size strinput2 - 1)
+      in
+        print("Attacking card: " ^ strinput2 ^ ".......\n");
+        (* The line below means: pass in a List, int, int. We have to convert and grab the int option value*)
+        user_attack(Hand,AIHand,valOf(Int.fromString(strinput1)),valOf(Int.fromString(strinput2))); 
+        game_loop("Start")
+      end
+    end
+  )
+
   else (print("Not valid option. Try again\n\n");
         print_game_loop_items();
-        (* How to use let in end
-          Reference: https://www.cs.cornell.edu/courses/cs312/2004fa/lectures/rec21.html 
-        *)
         let
           val menu_option = get_input()
-          (* Remove \n f rom the string:  String.substring(str,start,end) *)
           val menu_option = String.substring(menu_option, 0, size menu_option - 1)
         in
-          (* To run functions inside let use a set of ( ) around the function
-            If you are going to use more than one seperate then by ,
-            Reference: https://stackoverflow.com/questions/43081978/how-to-call-two-functions-in-a-let-in-in-sml-nj
-          *)
           (game_loop(menu_option))
         end
   );
