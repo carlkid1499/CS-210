@@ -26,7 +26,15 @@ procedure main()
         place_rm(xy,size,grid)
     }
 
-    
+    # Is the room in bounds
+    bound := rm_in_bound(xy,size)
+    if(bound == 1) then {
+        write("Yes room is in bounds")
+    }
+    else {
+        write("Room not in bound")
+    }
+
     show(grid)
 end
 
@@ -78,6 +86,23 @@ procedure rm_size()
     return rm_dimen 
 end
 
+procedure rm_in_bound(xy,size)
+    # Determine if round is within bounds
+    # bound being 1 is yes
+    # bound being 0 is no
+
+    bound := 1
+    width := 78
+    height := 24
+    if(xy[1]+size[1] > width) then {
+        bound := 0
+    }
+    if(xy[2]+size[2] > height) then {
+        bound := 0
+    }
+    return bound
+end
+
 procedure nearby_rm(xy,size,grid)
     # Check to see if there are 
     # any rooms nearby.
@@ -112,10 +137,6 @@ procedure nearby_rm(xy,size,grid)
         }  
     }
     return nearby
-end
-
-procedure rm_in_bounds(xy,size,grid)
-    bound := 0
 end
 
 procedure place_rm(xy,size,grid)   
