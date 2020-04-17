@@ -1,0 +1,216 @@
+procedure main()
+	grid:= list(24, repl("+", 78))
+    
+    i := 0
+    while i <= 5 do 
+    {
+        # generate the xy coordinates
+        # and the size of the room
+        xy := xy_loc()
+        size := rm_size()
+        nearby := nearby_rm(xy,size,grid)
+
+        # Is the room in bounds
+        bound := rm_in_bound(xy,size)
+        if(bound == 1) then {
+            write("Yes room is in bounds")
+
+            # Are there any rooms next door?
+            if(nearby == 0) then {
+                write("No nearby room: ",\nearby)
+                # place the room on the grid
+                place_rm(xy,size,grid)
+            }
+            else{
+                delete(xy,1)
+                delete(xy,2)
+                delete(size,1)
+                delete(size,2)
+                nearby := 0
+            }
+        }
+        else {
+            write("Room not in bound")
+            delete(xy,1)
+            delete(xy,2)
+            delete(size,1)
+            delete(size,2)
+        }
+        i +:=1
+    }
+    show(grid)
+end
+
+
+procedure xy_loc()
+    # Generate xy coordinates
+    # for the grid.
+    # 0123...78
+    # 1123...78
+    # 2123...78
+    # etc.
+
+    x := ?78
+    y := ?24
+
+    # debug code
+    write("x: ",\x)
+    write("y: ",\y)
+
+    xy := list(x,y)
+    return xy
+end
+
+procedure rm_size()
+    # Generate the room size
+    # and deterine if it'll
+    # fit on the grid.
+
+    width := ?78
+    height := ?24
+    rm_dimen := list(width,height)
+
+    # debug code
+    write("width: ",\width)
+    write("height: ",\height)
+    
+    if(width <= 2 ) then {
+        width := ?78
+        delete(rm_dimen,1)
+        rm_dimen := list(width,height)
+        # debug code
+        write("width: ",\width)
+        write("height: ",\height)
+    }
+    else if(height <= 2) then {
+        height := ?24
+        delete(rm_dimen,2)
+        rm_dimen := list(width,height)
+        # debug code
+        write("width: ",\width)
+        write("height: ",\height)
+    }
+    else {
+        return rm_dimen
+    } 
+end
+
+procedure rm_in_bound(xy,size)
+    # Determine if round is within bounds
+    # bound being 1 is yes
+    # bound being 0 is no
+
+    bound := 1
+    width := 78
+    height := 24
+    if(xy[1]+size[1]+1 > width) then {
+        bound := 0
+        return bound
+    }
+    else if(xy[2]+size[2]+1 > height) then {
+        bound := 0
+        return bound
+    }
+    else {
+        return bound
+    }
+end
+
+procedure nearby_rm(xy,size,grid)
+    # Check to see if there are 
+    # any rooms nearby.
+
+    nearby := 0
+    i := xy[1]
+    while i <= xy[1]+size[1] do {
+        # North Wall
+        if(grid[xy[2]][i] == "-") then {
+            nearby := 1
+            i+:=1
+        }
+        else if(grid[xy[2]][i] == "|") then {
+            nearby := 1
+            i+:=1
+        }
+        else {
+            i+:=1
+        }
+   }
+
+   j := xy[1]
+   while j <= xy[1]+size[1] do {
+        # South Wall
+        if(grid[xy[2]+size[2]][j] == "-") then {
+            nearby := 1
+            j+:=1
+        }
+        else if(grid[xy[2]+size[2]][j] == "|") then {
+            nearby := 1
+            j+:=1
+        }
+        else{
+            j+:=1
+        }
+    }
+
+    k := xy[2]
+    while k <= xy[2]+size[2]-2 do {
+        # East Wall
+        if(grid[k+1][xy[1]]) == "|" then {
+            nearby := 1
+            k+:=1
+        }
+        else if(grid[k+1][xy[1]]) == "-" then {
+            nearby := 1
+            k+:=1
+        }
+        else
+        {
+            k+:=1
+        }
+    }
+
+    l := xy[2]
+    while l <= xy[2]+size[2]-2 do {
+        # West Wall
+        if(grid[l+1][xy[1]+size[1]]) == "|" then {
+            nearby := 1
+            l+:=1
+        }
+        else if(grid[l+1][xy[1]+size[1]]) == "-" then {
+            nearby := 1
+            l+:=1
+        }
+        else {
+            l+:=1
+        }
+    } 
+    return nearby
+end
+
+procedure place_rm(xy,size,grid)   
+    # Place the room on the grid
+
+    i := xy[1]
+    while i <= xy[1]+size[1] do {
+        # Place North Wall
+        grid[xy[2]][i] := "-"
+        # Place South Wall
+        grid[xy[2]+size[2]][i] := "-"
+        i+:=1
+    }
+    
+    j := xy[2]
+    while j <= xy[2]+size[2]-2 do {
+        # Place East Wall
+        grid[j+1][xy[1]] := "|"
+        # Place West Wall
+        grid[j+1][xy[1]+size[1]] := "|"
+        j+:=1
+    }
+	
+end
+
+procedure show(L)
+	every write(!L)
+end
