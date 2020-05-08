@@ -107,10 +107,13 @@ class unison {
                         q.add(line);
                     } else if (multi_para_method && line.contains(")")) {
                         q.add(line);
+                        multi_para_method = false;
                     } else {
                         ;
                     }
-                } else {
+                }
+                else 
+                {
                     ;
                 }
             }
@@ -144,23 +147,52 @@ class unison {
             Boolean regular_class = false;
             Boolean super_class = false;
             Boolean super_class_parameters = false;
+            Boolean method = false;
+            Boolean method_parameters = false;
             int q_size = q.size();
             int j = 0;
             while (j < q_size) {
                 String data = q.remove();
                 if (!data.isEmpty()) {
+                    System.out.println(data);
                     if (data.matches("class\\s+[aA-zZ]+\\s*")) {
-                        System.out.println("we have a super class");
                         super_class = true;
                         String[] tokens = data.split(" ");
                         writer.write(" \"" + tokens[0] + "\": " + "\"" + tokens[1] + "\",\n");
                         writer.write("\"" + "super" + "\": " + "[");
                     } 
                     else if (data.matches("class\\s*")) {
-                        System.out.println("we have a class");
                         regular_class = true;
                         writer.write(" \"" + data + "\": ");
-
+                    }
+                    else if(super_class && data.matches("\\s*[aA-zZ]+\\s*\\(\\s*\\)"))
+                    {
+                        data = data.replace("(","");
+                        data = data.replace(")","");
+                        data = data.replace(" ","");
+                        writer.write("\"" + data + "\"" + "]\n,");
+                        writer.write("\"" + "methods" + "\": {");
+                        super_class = false;
+                    }
+                    else if(super_class && data.contains("(") && data.contains(",") && data.contains(")"))
+                    {
+                        String[] tokens = data.split("\\(");
+                        String str1 = tokens[0];
+                        String str2 = tokens[1];
+                        str1 = str1.replace(" ","");
+                        writer.write("\"" + str1 + "\"],\n" + "\"" + "fields" + "\": [");
+                        str2 = str2.replace(")","");
+                        String[] tokens2 = str2.split(",");
+                        int tokens2_size = tokens2.length;
+                        for(int i =0;i<(tokens2_size-1);i++)
+                        {
+                            writer.write("\"" + tokens2[i] + "\",");
+                        }
+                        String str3 = tokens2[tokens2_size-1];
+                        str3 = str3.replace(")","");
+                        writer.write("\"" + str3 + "\"],\n");
+                        writer.write("\"" + "methods" + "\": {");
+                        super_class = false;
                     }
                     else if(super_class && !data.contains("(") && !data.contains(")"))
                     {
@@ -185,16 +217,176 @@ class unison {
                     {
                         data = data.replace(" ", "");
                         data = data.replace(",", "");
-                        writer.write("\"" + data + "\"]");
+                        writer.write("\"" + data + "\"],\n");
                     }
                     else if(super_class_parameters && !data.contains(",") && data.contains(")"))
                     {
-                        data = data.replace(" ", "");
-                        data = data.replace(")", "");
-                        writer.write("\"" + data + "\"]");
                         super_class_parameters = false;
+                        writer.write("\"" + "methods" + "\": {");
                     }
-                    System.out.println(data);
+                    else if(regular_class && data.matches("\\s+[aA-zZ]+\\s*\\(\\s*\\)\\s*"))
+                    {
+                        data = data.replace("(","");
+                        data = data.replace(")","");
+                        data = data.replace(" ","");
+                        writer.write("\"" + data + "\",\n");
+                        writer.write("\"" + "methods" + "\": {");
+                        regular_class = false;
+                    }
+                    else if(regular_class && data.contains("(") && !data.contains(")"))
+                    {
+                        data = data.replace("(","");
+                        writer.write("\"" + data + "\",\n" + "\"" + "fields" + "\": [");
+                    }
+                    else if(regular_class && data.contains(","))
+                    {
+                        data = data.replace(",","");
+                        data = data.replace(" ","");
+                        writer.write("\"" + data + "\",");
+                    }
+                    else if(regular_class && !data.contains(",") && !data.contains(")"))
+                    {
+                        data = data.replace(" ","");
+                        writer.write("\"" + data + "\"],\n");
+                    }
+                    else if(regular_class && !data.contains(",") && data.contains(")"))
+                    {
+                        regular_class = false;
+                        writer.write("\"" + "methods" + "\": {");
+                    }
+                    else if(data.matches("\\s*method\\s*"))
+                    {
+                        method = true;
+                    }
+                    else if(method && data.matches("\\s*[aA-zZ]+\\s*\\(\\s*\\)"))
+                    {
+                        data = data.replace("(","");
+                        data = data.replace(")","");
+                        data = data.replace(" ","");
+    
+                        if(q.peek() == "end")
+                        {
+                            writer.write(" \"" + data + "\":" + " [] }");
+                        }
+                        else
+                        {
+                            writer.write(" \"" + data + "\":" + " [],");
+                        }
+                        method = false;
+                    }
+                    else if(method && data.contains("(") && !data.contains(",") && data.contains(")"))
+                    {
+                        String [] tokens = data.split("\\(");
+                        String str1 = tokens[0];
+                        String str2 = tokens[1];
+                        str1 = str1.replace(" ","");
+                        str2 = str2.replace(" ","");
+                        str2 = str2.replace(")","");
+
+                        if(q.peek() == "end")
+                        {
+                            writer.write(" \"" + str1 + "\":" + " [" + "\"" + str2 + "\"" + "] }");
+                        }
+                        else
+                        {
+                            writer.write(" \"" + str1 + "\":" + " [" + "\"" + str2 + "\"" + "],");
+                        }
+                        method = false;
+                    }
+                    else if(method && data.contains("(") && data.contains(",") && data.contains(")"))
+                    {
+                        String [] tokens = data.split("\\(");
+                        String str1 = tokens[0];
+                        String str2 = tokens[1];
+                        str1 = str1.replace(" ","");
+                        str1 = str1.replace(")","");
+                        String [] tokens2 = str2.split(",");
+                        int tokens2_size = tokens2.length;
+
+                        writer.write(" \"" + str1 + "\":" + " [");
+                        for(int i=0;i<(tokens2_size-1);i++)
+                        {
+                            String str3 = tokens2[i];
+                            str3 = str3.replace(" ","");
+                            str3 = str3.replace(")","");
+                            writer.write(" \"" + str3 + " \",");
+                        }
+                        String str4 = tokens2[tokens2_size-1];
+                        str4 = str4.replace(" ","");
+                        str4 = str4.replace(")","");
+                        writer.write(" \"" + str4 + "\"],\n");
+
+                        if(q.peek() == "end")
+                        {
+                            writer.write("}");
+                        }
+                        method = false;
+                    }
+                    else if(method && data.contains("(") && data.contains(",") && !data.contains(")"))
+                    {
+                        String [] tokens = data.split("\\(");
+                        String str1 = tokens[0];
+                        String str2 = tokens[1];
+
+                        str1 = str1.replace(" ","");
+                        str2 = str2.replace(",","");
+                        str2 = str2.replace(" ","");
+
+                        method_parameters = true;
+                        writer.write("\"" + str1 + "\":" + "[" + "\"" + str2 + "\",");
+                    }
+                    else if(method_parameters && data.contains(",") && !data.contains(")"))
+                    {
+                        data = data.replace(",","");
+                        data = data.replace(" ","");
+                        if(q.peek() == "end" || q.peek() == "method")
+                        {
+                            writer.write("\"" + data + "\"]");
+                        }
+                        else
+                        {
+                            writer.write("\"" + data + "\",");
+                        }
+                    }
+                    else if(method_parameters && !data.contains(",") && data.contains(")"))
+                    {
+                        method_parameters = false;
+                        data = data.replace(" ","");
+                        data = data.replace(")","");
+                        if(q.peek() == "end")
+                        {
+                            writer.write("\"" + data + "\"] }");
+                        }
+                        else
+                        {
+                            writer.write("\"" + data + "\"],");
+                        }
+                    }
+                    else if(method_parameters && data.contains(",") && data.contains(")"))
+                    {
+                        method_parameters = false;
+                        String [] tokens = data.split(",");
+                        int tokens_size = tokens.length;
+
+                        for(int i=0;i<(tokens_size-1);i++)
+                        {
+                            String str1 = tokens[i];
+                            str1 = str1.replace(",","");
+                            str1 = str1.replace(" ","");
+                            writer.write("\"" + str1 + "\"," );
+                        }
+                        String str2 = tokens[tokens_size-1];
+                        str2 = str2.replace(" ","");
+                        str2 = str2.replace(")","");
+                        if(q.peek() == "end")
+                        {
+                            writer.write("\"" + str2 + "\"] }");
+                        }
+                        else
+                        {
+                            writer.write("\"" + str2 + "\"],");
+                        }
+                    }
                 }
                 j++;
             }

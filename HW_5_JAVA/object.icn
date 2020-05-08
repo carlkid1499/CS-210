@@ -24,21 +24,21 @@ class Object(
    #
    # Return a string representation of the oject.
    #
-   method to_string(depth,seen)
+   method to_string(depth,seen,test1,test2,test3,test4,test5)
       return lang::object_to_string(self, depth, seen)
    end
 
    #
    # Test equality of this object with another
    #
-   method equals(other, seen)
+   method equals(other, seen, test1, test2, test3)
       return lang::object_equals(self, other, seen)
    end
 
    #
    # Return a hash code for the object
    #
-   method hash_code(depth, seen)
+   method hash_code(depth, seen,test1)
       return lang::object_hash_code(self, depth, seen)
    end
 
