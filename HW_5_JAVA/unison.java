@@ -43,9 +43,14 @@ class unison {
             boolean multi_para_method = false;
             while ((line = br.readLine()) != null) {
 
+                // Do we have a comment? If so ignrore it.
+                if(line.matches("^\\s*#.*"))
+                {
+                    ;
+                }
                 // Does it start with "class"
-                if (line.startsWith("class")) {
-                    if (line.contains("(") && line.contains(")")) {
+                else if (line.startsWith("class")) {
+                    if (line.contains("(") && line.contains(")") && !line.contains("\"")) {
                         // super class case
                         if (line.contains(":")) {
                             String[] tokens = line.split(":");
@@ -62,7 +67,7 @@ class unison {
                         }
                     }
                     // This must mean we have multiple parameters on multiple lines
-                    else if (line.startsWith("class") && line.contains("(") && !line.contains(")")) {
+                    else if (line.startsWith("class") && line.contains("(") && !line.contains(")") && !line.contains("\"")) {
                         // super class case
                         if (line.contains(":")) {
                             String[] tokens = line.split(":");
@@ -90,13 +95,13 @@ class unison {
                     } else if (multi_para_class && line.contains(")")) {
                         q.add(line);
                         multi_para_class = false;
-                    } else if (line.contains("method") && line.contains("(") && line.contains(")")) {
+                    } else if (line.contains("method") && line.contains("(") && line.contains(")") && !line.contains("\"")) {
                         String[] tokens = line.split(" ");
                         int tokens_size = tokens.length;
                         for (int i = 0; i < tokens_size; i++) {
                             q.add(tokens[i]);
                         }
-                    } else if (line.contains("method") && line.contains("(") && !line.contains(")")) {
+                    } else if (line.contains("method") && line.contains("(") && !line.contains(")") && !line.contains("\"")) {
                         multi_para_method = true;
                         String[] tokens = line.split(" ");
                         int tokens_size = tokens.length;
@@ -112,7 +117,27 @@ class unison {
                         ;
                     }
                 }
-                else 
+                
+                // Does it start with a space and have a comment in it
+                else if(line.startsWith("   ") && line.contains("#") && !line.contains(":=") && !line.contains("="))
+                {
+                    if(line.matches("\\s+method.*"))
+                    {
+                        String [] tokens = line.split("#");
+                        q.add(tokens[0]);
+                    }
+                    else if(line.contains(",") && line.startsWith("   "))
+                    {
+                        String [] tokens = line.split("#");
+                        q.add(tokens[0]);
+                    }
+                    else if(!line.contains(",") && line.startsWith("   "))
+                    {
+                        String [] tokens = line.split("#");
+                        q.add(tokens[0]);
+                    }
+                }
+                else
                 {
                     ;
                 }
@@ -149,23 +174,26 @@ class unison {
             Boolean super_class_parameters = false;
             Boolean method = false;
             Boolean method_parameters = false;
+            int classes_seen = 0;
             int q_size = q.size();
             int j = 0;
             while (j < q_size) {
                 String data = q.remove();
                 if (!data.isEmpty()) {
                     System.out.println(data);
-                    if (data.matches("class\\s+[aA-zZ]+\\s*")) {
+                    if (data.matches("class\\s+[aA0-zZ9]+\\s*")) {
                         super_class = true;
+                        classes_seen = classes_seen + 1;
                         String[] tokens = data.split(" ");
                         writer.write(" \"" + tokens[0] + "\": " + "\"" + tokens[1] + "\",\n");
                         writer.write("\"" + "super" + "\": " + "[");
                     } 
                     else if (data.matches("class\\s*")) {
                         regular_class = true;
+                        classes_seen = classes_seen + 1;
                         writer.write(" \"" + data + "\": ");
                     }
-                    else if(super_class && data.matches("\\s*[aA-zZ]+\\s*\\(\\s*\\)"))
+                    else if(super_class && data.matches("\\s*[aA0-zZ9]+\\s*\\(\\s*\\)"))
                     {
                         data = data.replace("(","");
                         data = data.replace(")","");
@@ -207,6 +235,21 @@ class unison {
                         super_class_parameters = true;
                         writer.write("\n\"fields\": [");
                     }
+                    else if(super_class && data.contains("(") && data.contains(")") && !data.contains(","))
+                    {
+                        String [] tokens = data.split("\\(");
+                        String str1 = tokens[0];
+                        String str2 = tokens[1];
+                        str1 = str1.replace("(","");
+                        str1 = str1.replace(")","");
+                        str1 = str1.replace(" ","");
+                        str2 = str2.replace("(","");
+                        str2 = str2.replace(")","");
+                        str2 = str2.replace(" ","");
+                        writer.write("\"" + str1 + "\"],");
+                        super_class = false;
+                        writer.write("\n\"fields\": [" + "\"" + str2 + "\"],\n" + "\"methods\": { ");
+                    }
                     else if(super_class_parameters && data.contains(",") && !data.contains(")"))
                     {
                         data = data.replace(" ", "");
@@ -224,7 +267,7 @@ class unison {
                         super_class_parameters = false;
                         writer.write("\"" + "methods" + "\": {");
                     }
-                    else if(regular_class && data.matches("\\s+[aA-zZ]+\\s*\\(\\s*\\)\\s*"))
+                    else if(regular_class && data.matches("\\s*[aA0-zZ9]+\\s*\\(\\s*\\)\\s*"))
                     {
                         data = data.replace("(","");
                         data = data.replace(")","");
@@ -258,7 +301,7 @@ class unison {
                     {
                         method = true;
                     }
-                    else if(method && data.matches("\\s*[aA-zZ]+\\s*\\(\\s*\\)"))
+                    else if(method && data.matches("\\s*[aA0-zZ9]+\\s*\\(\\s*\\)"))
                     {
                         data = data.replace("(","");
                         data = data.replace(")","");
@@ -387,11 +430,18 @@ class unison {
                             writer.write("\"" + str2 + "\"],");
                         }
                     }
+                    else
+                    {
+                        ;
+                    }
                 }
                 j++;
             }
             /* ---- End: Remove our Queue ---- */
-            writer.write(" }");
+            for(int i = 0;i<classes_seen;i++)
+            {
+                writer.write(" }");
+            }
             writer.close();
             /* ---- End: Write to file ----- */
 
